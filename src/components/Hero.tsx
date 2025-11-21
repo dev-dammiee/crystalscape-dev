@@ -112,11 +112,11 @@ export const Hero = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center max-w-5xl mx-auto space-y-10">
           <div className="space-y-6 animate-fade-in-up">
-            <div className="inline-block px-6 py-2 glass rounded-full text-sm font-medium mb-4">
+            <div className="inline-block px-6 py-2 glass rounded-full text-sm font-medium mb-1 mt-20">
               <span className="gradient-text">Available for freelance work</span>
             </div>
             <h1 className="text-6xl sm:text-7xl lg:text-8xl font-black gradient-text leading-tight">
-              Frontend Developer
+             Dammiee
             </h1>
             <p className="text-2xl sm:text-3xl text-foreground/90 font-light max-w-3xl mx-auto">
               Transforming ideas into stunning digital experiences with cutting-edge web technologies
