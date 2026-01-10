@@ -1,12 +1,24 @@
-import { ExternalLink, Github, Star } from 'lucide-react';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { useState, useEffect, useRef } from 'react';
+import { ExternalLink, Github, Star, ChevronLeft, ChevronRight, Filter } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export const Projects = () => {
   const { ref, isVisible } = useScrollAnimation();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [isMobile, setIsMobile] = useState(false);
+  const tabsListRef = useRef<HTMLDivElement>(null);
+  const projectsPerPage = 6;
 
   const projects = [
     {
@@ -14,31 +26,42 @@ export const Projects = () => {
       category: 'Web Application',
       description: 'Full-featured e-commerce platform with React, TypeScript, and Tailwind CSS. Features include cart management, payment integration, real-time inventory, and advanced filtering.',
       tech: ['React', 'TypeScript', 'Tailwind CSS', 'Redux'],
-      image: 'https://images.unsplash.com/photo-1557821552-17105176677c?w=800&h=600&fit=crop',
-      github: 'https://github.com',
-      demo: 'https://demo.com',
+      image: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=800&h=600&fit=crop',
+      github: 'https://github.com/dev-dammiee/shop-ease',
+      demo: 'https://shop-ease-web.vercel.app/index.html',
       stars: 124,
       featured: true,
     },
     {
-      title: 'Analytics Dashboard',
+      title: 'Cloudlytics',
       category: 'Dashboard',
-      description: 'Interactive real-time analytics dashboard built with React and TypeScript. Features data visualization, custom charts, and responsive design for monitoring key metrics.',
-      tech: ['React', 'TypeScript', 'Chart.js', 'CSS'],
-      image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop',
-      github: 'https://github.com',
-      demo: 'https://demo.com',
+      description: ' A cloud security and compliance dashboard providing real‑time monitoring, analytics, and asset insights for multi‑cloud environments.',
+      tech: ['React', 'TypeScript', 'CSS'],
+      image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&h=600&fit=crop',
+      github: 'https://github.com/dev-dammiee/Cloudlytics',
+      demo: 'https://cloudlytics.vercel.app/',
       stars: 89,
       featured: true,
     },
     {
-      title: 'Social Media App',
+      title: 'Chic Lighting & Design',
+      category: 'Dashboard',
+      description: ' A stylish product landing site showcasing modern lighting solutions and interior design services with a sleek, responsive UI.',
+      tech: ['React', 'TypeScript', 'CSS'],
+      image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop',
+      github: 'https://github.com/dev-dammiee/chic-lighting-and-design',
+      demo: 'https://chic-lighting-and-design.vercel.app/',
+      stars: 89,
+      featured: true,
+    },
+    {
+      title: 'Caligigs ',
       category: 'Web Application',
-      description: 'Modern social media application with Bootstrap and React. Includes user profiles, real-time updates, messaging system, and media sharing capabilities.',
+      description: ' A talent marketplace platform for booking local creatives and professionals, showcasing talent profiles and enabling users to discover and hire services.',
       tech: ['React', 'Bootstrap', 'HTML5', 'WebSocket'],
-      image: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&h=600&fit=crop',
-      github: 'https://github.com',
-      demo: 'https://demo.com',
+      image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=600&fit=crop',
+      github: 'https://github.com/dev-dammiee/Caligigs',
+      demo: 'https://caligig.vercel.app/',
       stars: 156,
       featured: true,
     },
@@ -47,9 +70,9 @@ export const Projects = () => {
       category: 'Productivity',
       description: 'Collaborative task management application with drag-and-drop functionality, team collaboration features, and progress tracking.',
       tech: ['React', 'TypeScript', 'Tailwind CSS'],
-      image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&h=600&fit=crop',
-      github: 'https://github.com',
-      demo: 'https://demo.com',
+      image: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=800&h=600&fit=crop',
+      github: 'https://github.com/dev-dammiee/Task-Flow',
+      demo: 'https://task-flow-five-zeta.vercel.app/',
       stars: 67,
       featured: false,
     },
@@ -65,19 +88,85 @@ export const Projects = () => {
       featured: false,
     },
     {
-      title: 'Portfolio CMS',
+      title: 'CampusConnect',
       category: 'CMS',
-      description: 'Content management system for creative portfolios with easy customization and responsive templates.',
-      tech: ['React', 'TypeScript', 'Bootstrap'],
-      image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop',
-      github: 'https://github.com',
-      demo: 'https://demo.com',
+      description: 'CampusConnect: Role-based campus platform for events, galleries, and community engagement.',
+      tech: ['HTML', 'CSS', 'Bootstrap'],
+      image: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&h=600&fit=crop',
+      github: 'https://github.com/dev-dammiee/CampusConnect',
+      demo: 'https://campus-connect-opal.vercel.app/',
       stars: 92,
       featured: false,
+    },
+    {
+  title: 'LumiPOS',
+  category: 'Web Application',
+  description: 'Modern and responsive Point-of-Sale (POS) system for retail and restaurants, featuring sales dashboard, product catalog, inventory management, and checkout interface.',
+  tech: ['React', 'TypeScript', 'Chart.js', 'Node.js'],
+  image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&h=600&fit=crop',
+  github: 'https://github.com/dev-dammiee/LumiPOS-POS-UI-Mockup#',
+  demo: 'https://lumi-pos.vercel.app/',
+  stars: 78,
+  featured: false,
+}
+,
+    {
+      title: 'Fitness App',
+      category: 'Mobile',
+      description: 'Mobile fitness application with workout plans, progress tracking, and nutrition guidance.',
+      tech: ['React Native', 'TypeScript', 'Firebase'],
+      image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop',
+      github: 'https://github.com',
+      demo: 'https://demo.com',
+      stars: 112,
+      featured: true,
     },
   ];
 
   const categories = ['All', ...Array.from(new Set(projects.map(p => p.category)))];
+
+  // Check for mobile on mount and resize
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Filter projects based on active category
+  const filteredProjects = activeCategory === 'All' 
+    ? projects 
+    : projects.filter(project => project.category === activeCategory);
+
+  // Calculate total pages
+  const totalPages = Math.ceil(filteredProjects.length / projectsPerPage);
+
+  // Get current page projects
+  const indexOfLastProject = currentPage * projectsPerPage;
+  const indexOfFirstProject = indexOfLastProject - projectsPerPage;
+  const currentProjects = filteredProjects.slice(indexOfFirstProject, indexOfLastProject);
+
+  // Reset to page 1 when category changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeCategory]);
+
+  // Pagination handlers
+  const nextPage = () => {
+    setCurrentPage(prev => Math.min(prev + 1, totalPages));
+  };
+
+  const prevPage = () => {
+    setCurrentPage(prev => Math.max(prev - 1, 1));
+  };
+
+  const goToPage = (page: number) => {
+    setCurrentPage(page);
+  };
 
   const ProjectCard = ({ project, index }: { project: typeof projects[0], index: number }) => (
     <Card
@@ -152,27 +241,177 @@ export const Projects = () => {
           </p>
         </div>
 
-        <Tabs defaultValue="All" className="w-full">
-          <TabsList className={`grid w-full max-w-2xl mx-auto mb-12 glass ${isVisible ? 'animate-scale-in' : 'opacity-0'}`}
-                    style={{ animationDelay: '0.15s', gridTemplateColumns: `repeat(${categories.length}, 1fr)` }}>
-            {categories.map((category) => (
-              <TabsTrigger key={category} value={category} className="text-sm">
-                {category}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+        {/* Mobile Filter Dropdown */}
+        <div className="md:hidden mb-8">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="w-full glass justify-between">
+                <div className="flex items-center gap-2">
+                  <Filter className="h-4 w-4" />
+                  <span>Filter: {activeCategory}</span>
+                </div>
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-[calc(100vw-2rem)] max-w-sm mx-auto glass">
+              {categories.map((category) => (
+                <DropdownMenuItem
+                  key={category}
+                  className={`cursor-pointer ${activeCategory === category ? 'bg-accent' : ''}`}
+                  onClick={() => setActiveCategory(category)}
+                >
+                  {category}
+                  {activeCategory === category && (
+                    <span className="ml-auto text-primary">✓</span>
+                  )}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          
+          {/* Active filter indicator */}
+          <div className="mt-4 text-center">
+            <Badge variant="secondary" className="text-sm">
+              {filteredProjects.length} projects found
+            </Badge>
+          </div>
+        </div>
 
-          {categories.map((category) => (
-            <TabsContent key={category} value={category}>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {projects
-                  .filter(p => category === 'All' || p.category === category)
-                  .map((project, index) => (
-                    <ProjectCard key={project.title} project={project} index={index} />
-                  ))}
+        <Tabs value={activeCategory} className="w-full" onValueChange={setActiveCategory}>
+          {/* Desktop Tabs - Hidden on mobile */}
+          <div className="hidden md:block">
+            <TabsList 
+              ref={tabsListRef}
+              className={`w-full max-w-2xl mx-auto mb-12 glass overflow-x-auto ${
+                isVisible ? 'animate-scale-in' : 'opacity-0'
+              }`}
+              style={{ animationDelay: '0.15s' }}
+            >
+              {categories.map((category) => (
+                <TabsTrigger 
+                  key={category} 
+                  value={category} 
+                  className="text-sm px-4 py-2 whitespace-nowrap"
+                >
+                  {category}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
+
+          <TabsContent value={activeCategory} className="space-y-8">
+            {/* Projects Grid */}
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+              {currentProjects.map((project, index) => (
+                <ProjectCard key={project.title} project={project} index={index} />
+              ))}
+            </div>
+
+            {/* No Projects Message */}
+            {currentProjects.length === 0 && (
+              <div className="text-center py-12">
+                <div className="text-muted-foreground text-lg">
+                  No projects found in this category
+                </div>
+                <Button 
+                  variant="outline" 
+                  className="mt-4"
+                  onClick={() => setActiveCategory('All')}
+                >
+                  View All Projects
+                </Button>
               </div>
-            </TabsContent>
-          ))}
+            )}
+
+            {/* Pagination Controls - Only show if there's more than 1 page */}
+            {totalPages > 1 && filteredProjects.length > 0 && (
+              <div className={`flex flex-col sm:flex-row items-center justify-between pt-8 ${isVisible ? 'animate-fade-in' : 'opacity-0'}`}
+                   style={{ animationDelay: '0.3s' }}>
+                <div className="text-sm text-muted-foreground mb-4 sm:mb-0">
+                  <span className="md:hidden">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <span className="hidden md:inline">
+                    Showing <span className="font-semibold">{indexOfFirstProject + 1}-{Math.min(indexOfLastProject, filteredProjects.length)}</span> of{' '}
+                    <span className="font-semibold">{filteredProjects.length}</span> projects
+                  </span>
+                </div>
+                
+                <div className="flex items-center gap-2">
+                  {/* Previous Button */}
+                  <Button
+                    variant="outline"
+                    size={isMobile ? "default" : "icon"}
+                    onClick={prevPage}
+                    disabled={currentPage === 1}
+                    className={isMobile ? "px-4" : "h-10 w-10"}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    {isMobile && <span className="ml-2">Prev</span>}
+                    <span className="sr-only">Previous page</span>
+                  </Button>
+
+                  {/* Page Numbers - Hidden on mobile, shown on tablet/desktop */}
+                  <div className="hidden sm:flex items-center gap-1">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                      // Show limited page numbers for better UX
+                      if (
+                        page === 1 ||
+                        page === totalPages ||
+                        (page >= currentPage - 1 && page <= currentPage + 1)
+                      ) {
+                        return (
+                          <Button
+                            key={page}
+                            variant={currentPage === page ? "default" : "outline"}
+                            size="sm"
+                            className="h-10 w-10"
+                            onClick={() => goToPage(page)}
+                          >
+                            {page}
+                          </Button>
+                        );
+                      }
+                      
+                      // Show ellipsis for skipped pages
+                      if (
+                        (page === currentPage - 2 && currentPage > 3) ||
+                        (page === currentPage + 2 && currentPage < totalPages - 2)
+                      ) {
+                        return (
+                          <span key={page} className="px-2 text-muted-foreground">
+                            ...
+                          </span>
+                        );
+                      }
+                      
+                      return null;
+                    })}
+                  </div>
+
+                  {/* Mobile page indicator */}
+                  <div className="sm:hidden flex items-center gap-2">
+                    <span className="text-sm font-medium">
+                      {currentPage} / {totalPages}
+                    </span>
+                  </div>
+
+                  {/* Next Button */}
+                  <Button
+                    variant="outline"
+                    size={isMobile ? "default" : "icon"}
+                    onClick={nextPage}
+                    disabled={currentPage === totalPages}
+                    className={isMobile ? "px-4" : "h-10 w-10"}
+                  >
+                    {isMobile && <span className="mr-2">Next</span>}
+                    <ChevronRight className="h-4 w-4" />
+                    <span className="sr-only">Next page</span>
+                  </Button>
+                </div>
+              </div>
+            )}
+          </TabsContent>
         </Tabs>
       </div>
     </section>
