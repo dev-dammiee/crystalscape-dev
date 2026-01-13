@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { ExternalLink, Github, Star, ChevronLeft, ChevronRight, Filter } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,7 +17,6 @@ export const Projects = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [activeCategory, setActiveCategory] = useState('All');
   const [isMobile, setIsMobile] = useState(false);
-  const tabsListRef = useRef<HTMLDivElement>(null);
   const projectsPerPage = 6;
 
   const projects = [
@@ -99,17 +98,16 @@ export const Projects = () => {
       featured: false,
     },
     {
-  title: 'LumiPOS',
-  category: 'Web Application',
-  description: 'Modern and responsive Point-of-Sale (POS) system for retail and restaurants, featuring sales dashboard, product catalog, inventory management, and checkout interface.',
-  tech: ['React', 'TypeScript', 'Chart.js', 'Node.js'],
-  image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&h=600&fit=crop',
-  github: 'https://github.com/dev-dammiee/LumiPOS-POS-UI-Mockup#',
-  demo: 'https://lumi-pos.vercel.app/',
-  stars: 78,
-  featured: false,
-}
-,
+      title: 'LumiPOS',
+      category: 'Web Application',
+      description: 'Modern and responsive Point-of-Sale (POS) system for retail and restaurants, featuring sales dashboard, product catalog, inventory management, and checkout interface.',
+      tech: ['React', 'TypeScript', 'Chart.js', 'Node.js'],
+      image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&h=600&fit=crop',
+      github: 'https://github.com/dev-dammiee/LumiPOS-POS-UI-Mockup#',
+      demo: 'https://lumi-pos.vercel.app/',
+      stars: 78,
+      featured: false,
+    },
     {
       title: 'Fitness App',
       category: 'Mobile',
@@ -138,9 +136,11 @@ export const Projects = () => {
   }, []);
 
   // Filter projects based on active category
-  const filteredProjects = activeCategory === 'All' 
-    ? projects 
-    : projects.filter(project => project.category === activeCategory);
+  const filteredProjects = useMemo(() => {
+    return activeCategory === 'All' 
+      ? projects 
+      : projects.filter(project => project.category === activeCategory);
+  }, [activeCategory, projects]);
 
   // Calculate total pages
   const totalPages = Math.ceil(filteredProjects.length / projectsPerPage);
@@ -277,142 +277,145 @@ export const Projects = () => {
           </div>
         </div>
 
-        <Tabs value={activeCategory} className="w-full" onValueChange={setActiveCategory}>
-          {/* Desktop Tabs - Hidden on mobile */}
-          <div className="hidden md:block">
-            <TabsList 
-              ref={tabsListRef}
-              className={`w-full max-w-2xl mx-auto mb-12 glass overflow-x-auto ${
-                isVisible ? 'animate-scale-in' : 'opacity-0'
-              }`}
-              style={{ animationDelay: '0.15s' }}
-            >
+        {/* Desktop Tabs - This is the fixed part */}
+        <div className="hidden md:block">
+          <div className="flex justify-center mb-12">
+            <div className={`inline-flex items-center rounded-lg p-1 glass ${
+              isVisible ? 'animate-scale-in' : 'opacity-0'
+            }`}
+            style={{ animationDelay: '0.15s' }}>
               {categories.map((category) => (
-                <TabsTrigger 
-                  key={category} 
-                  value={category} 
-                  className="text-sm px-4 py-2 whitespace-nowrap"
+                <button
+                  key={category}
+                  onClick={() => setActiveCategory(category)}
+                  className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                    activeCategory === category
+                      ? 'bg-accent text-accent-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-accent/20'
+                  }`}
                 >
                   {category}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </div>
-
-          <TabsContent value={activeCategory} className="space-y-8">
-            {/* Projects Grid */}
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-              {currentProjects.map((project, index) => (
-                <ProjectCard key={project.title} project={project} index={index} />
+                </button>
               ))}
             </div>
+          </div>
+        </div>
 
-            {/* No Projects Message */}
-            {currentProjects.length === 0 && (
-              <div className="text-center py-12">
-                <div className="text-muted-foreground text-lg">
-                  No projects found in this category
-                </div>
-                <Button 
-                  variant="outline" 
-                  className="mt-4"
-                  onClick={() => setActiveCategory('All')}
-                >
-                  View All Projects
-                </Button>
+        {/* Projects Grid */}
+        <div className="space-y-8">
+          {/* Projects Grid */}
+          {filteredProjects.length > 0 ? (
+            <>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                {currentProjects.map((project, index) => (
+                  <ProjectCard key={project.title} project={project} index={index} />
+                ))}
               </div>
-            )}
 
-            {/* Pagination Controls - Only show if there's more than 1 page */}
-            {totalPages > 1 && filteredProjects.length > 0 && (
-              <div className={`flex flex-col sm:flex-row items-center justify-between pt-8 ${isVisible ? 'animate-fade-in' : 'opacity-0'}`}
-                   style={{ animationDelay: '0.3s' }}>
-                <div className="text-sm text-muted-foreground mb-4 sm:mb-0">
-                  <span className="md:hidden">
-                    Page {currentPage} of {totalPages}
-                  </span>
-                  <span className="hidden md:inline">
-                    Showing <span className="font-semibold">{indexOfFirstProject + 1}-{Math.min(indexOfLastProject, filteredProjects.length)}</span> of{' '}
-                    <span className="font-semibold">{filteredProjects.length}</span> projects
-                  </span>
-                </div>
-                
-                <div className="flex items-center gap-2">
-                  {/* Previous Button */}
-                  <Button
-                    variant="outline"
-                    size={isMobile ? "default" : "icon"}
-                    onClick={prevPage}
-                    disabled={currentPage === 1}
-                    className={isMobile ? "px-4" : "h-10 w-10"}
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                    {isMobile && <span className="ml-2">Prev</span>}
-                    <span className="sr-only">Previous page</span>
-                  </Button>
-
-                  {/* Page Numbers - Hidden on mobile, shown on tablet/desktop */}
-                  <div className="hidden sm:flex items-center gap-1">
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-                      // Show limited page numbers for better UX
-                      if (
-                        page === 1 ||
-                        page === totalPages ||
-                        (page >= currentPage - 1 && page <= currentPage + 1)
-                      ) {
-                        return (
-                          <Button
-                            key={page}
-                            variant={currentPage === page ? "default" : "outline"}
-                            size="sm"
-                            className="h-10 w-10"
-                            onClick={() => goToPage(page)}
-                          >
-                            {page}
-                          </Button>
-                        );
-                      }
-                      
-                      // Show ellipsis for skipped pages
-                      if (
-                        (page === currentPage - 2 && currentPage > 3) ||
-                        (page === currentPage + 2 && currentPage < totalPages - 2)
-                      ) {
-                        return (
-                          <span key={page} className="px-2 text-muted-foreground">
-                            ...
-                          </span>
-                        );
-                      }
-                      
-                      return null;
-                    })}
-                  </div>
-
-                  {/* Mobile page indicator */}
-                  <div className="sm:hidden flex items-center gap-2">
-                    <span className="text-sm font-medium">
-                      {currentPage} / {totalPages}
+              {/* Pagination Controls - Only show if there's more than 1 page */}
+              {totalPages > 1 && filteredProjects.length > 0 && (
+                <div className={`flex flex-col sm:flex-row items-center justify-between pt-8 ${isVisible ? 'animate-fade-in' : 'opacity-0'}`}
+                     style={{ animationDelay: '0.3s' }}>
+                  <div className="text-sm text-muted-foreground mb-4 sm:mb-0">
+                    <span className="md:hidden">
+                      Page {currentPage} of {totalPages}
+                    </span>
+                    <span className="hidden md:inline">
+                      Showing <span className="font-semibold">{indexOfFirstProject + 1}-{Math.min(indexOfLastProject, filteredProjects.length)}</span> of{' '}
+                      <span className="font-semibold">{filteredProjects.length}</span> projects
                     </span>
                   </div>
+                  
+                  <div className="flex items-center gap-2">
+                    {/* Previous Button */}
+                    <Button
+                      variant="outline"
+                      size={isMobile ? "default" : "icon"}
+                      onClick={prevPage}
+                      disabled={currentPage === 1}
+                      className={isMobile ? "px-4" : "h-10 w-10"}
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                      {isMobile && <span className="ml-2">Prev</span>}
+                      <span className="sr-only">Previous page</span>
+                    </Button>
 
-                  {/* Next Button */}
-                  <Button
-                    variant="outline"
-                    size={isMobile ? "default" : "icon"}
-                    onClick={nextPage}
-                    disabled={currentPage === totalPages}
-                    className={isMobile ? "px-4" : "h-10 w-10"}
-                  >
-                    {isMobile && <span className="mr-2">Next</span>}
-                    <ChevronRight className="h-4 w-4" />
-                    <span className="sr-only">Next page</span>
-                  </Button>
+                    {/* Page Numbers - Hidden on mobile, shown on tablet/desktop */}
+                    <div className="hidden sm:flex items-center gap-1">
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                        // Show limited page numbers for better UX
+                        if (
+                          page === 1 ||
+                          page === totalPages ||
+                          (page >= currentPage - 1 && page <= currentPage + 1)
+                        ) {
+                          return (
+                            <Button
+                              key={page}
+                              variant={currentPage === page ? "default" : "outline"}
+                              size="sm"
+                              className="h-10 w-10"
+                              onClick={() => goToPage(page)}
+                            >
+                              {page}
+                            </Button>
+                          );
+                        }
+                        
+                        // Show ellipsis for skipped pages
+                        if (
+                          (page === currentPage - 2 && currentPage > 3) ||
+                          (page === currentPage + 2 && currentPage < totalPages - 2)
+                        ) {
+                          return (
+                            <span key={page} className="px-2 text-muted-foreground">
+                              ...
+                            </span>
+                          );
+                        }
+                        
+                        return null;
+                      })}
+                    </div>
+
+                    {/* Mobile page indicator */}
+                    <div className="sm:hidden flex items-center gap-2">
+                      <span className="text-sm font-medium">
+                        {currentPage} / {totalPages}
+                      </span>
+                    </div>
+
+                    {/* Next Button */}
+                    <Button
+                      variant="outline"
+                      size={isMobile ? "default" : "icon"}
+                      onClick={nextPage}
+                      disabled={currentPage === totalPages}
+                      className={isMobile ? "px-4" : "h-10 w-10"}
+                    >
+                      {isMobile && <span className="mr-2">Next</span>}
+                      <ChevronRight className="h-4 w-4" />
+                      <span className="sr-only">Next page</span>
+                    </Button>
+                  </div>
                 </div>
+              )}
+            </>
+          ) : (
+            <div className="text-center py-12">
+              <div className="text-muted-foreground text-lg">
+                No projects found in this category
               </div>
-            )}
-          </TabsContent>
-        </Tabs>
+              <Button 
+                variant="outline" 
+                className="mt-4"
+                onClick={() => setActiveCategory('All')}
+              >
+                View All Projects
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
     </section>
   );
